@@ -1,31 +1,49 @@
-import React from 'react';
-import Modal from '../UI/Modal';
-import classes from './Cart.module.css'
+import React, { useContext } from "react";
+import Modal from "../UI/Modal";
+import classes from "./Cart.module.css";
+import CartContext from "../../store/cart-context";
+import CartItem from "./CartItem";
 
 function Cart(props) {
-    const cartItems = 
-    <ul className={classes['cart-items']}>
-         { [{
-        id: '1',
-        name:'Sushi',
-        amount:2 ,
-        price:125
-    }].map((item) => (<li>{item.name} </li>))}
+  const cartCtx = useContext(CartContext);
+
+  const totalAmount = `$${cartCtx.totalAmount.toFixed(2)}`;
+  const hasItems = cartCtx.items.length > 0;
+
+  const carItemRemoveHandler = (id) => {};
+  const cartItemAddHandler = (item) => {};
+
+  const cartItems = (
+    <ul className={classes["cart-items"]}>
+      {cartCtx.items.map((item) => (
+        <CartItem
+          key={item.id}
+          name={item.name}
+          amount={item.amount}
+          price={item.price}
+          onRemove={carItemRemoveHandler.bind(null, item.id)}
+          onAdd={cartItemAddHandler.bind(null, item)}
+        />
+      ))}
     </ul>
+  );
 
   return (
-    <Modal>
-        {cartItems}
-        <div className={classes.total}>
-            <span> Total Amout</span>
-            <span>35.62</span>
-        </div>
-        <div className={classes.actions}>
-            <button className={classes['button--alt']}>Close</button>
-            <button className={classes.button}>order</button>
-        </div>
+    <Modal onClose={props.onClose}>
+      {cartItems}
+      <div className={classes.total}>
+        <span> Total Amout</span>
+        <span>{totalAmount}</span>
+      </div>
+      <div className={classes.actions}>
+        <button className={classes["button--alt"]} onClick={props.onClose}>
+          Close
+        </button>
+        {/* hasItems is true then only render a button */}
+        {hasItems && <button className={classes.button}>order</button>}
+      </div>
     </Modal>
-  )
+  );
 }
 
-export default Cart
+export default Cart;
